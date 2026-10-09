@@ -1,0 +1,111 @@
+{
+  "action_specs": [
+    {
+      "action_type": "repair",
+      "description": "修桥一次",
+      "effects": [
+        {
+          "op": "add",
+          "path": "repair_progress",
+          "value": 1
+        }
+      ],
+      "kind": "WRITE",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "preconditions": [
+        {
+          "expr": "world['repair_progress'] < 3",
+          "reason_code": "ALREADY_REPAIRED"
+        }
+      ],
+      "visibility": {
+        "proposal": {
+          "audience": "ALL_AGENTS"
+        },
+        "result": {
+          "audience": "ALL_AGENTS"
+        }
+      }
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "builder",
+      "allowed_tools": [
+        "repair"
+      ],
+      "display_name": "Builder",
+      "model_id": "deepseek-flash",
+      "persona": "谨慎的工程师",
+      "public_role": "施工"
+    },
+    {
+      "agent_id": "planner",
+      "allowed_tools": [
+        "repair"
+      ],
+      "display_name": "Planner",
+      "model_id": "deepseek-flash",
+      "persona": "务实的规划者",
+      "public_role": "规划"
+    }
+  ],
+  "background_story": "两名参与者共同修复桥梁。",
+  "early_semantic_trigger_policy": {
+    "enabled": false
+  },
+  "initial_world_state": {
+    "repair_progress": 0
+  },
+  "interaction_mode": "cooperative",
+  "judging_policy": {
+    "enabled": false
+  },
+  "leaderboard_config": {
+    "enabled": false,
+    "leaderboard_type": "contribution"
+  },
+  "public_story": "两名参与者共同修复桥梁。",
+  "random_seed": 101,
+  "scenario_name": "共同修桥",
+  "scene_id": "cooperative-repair",
+  "scene_version": "1",
+  "scheduler_policy": "fixed_round_robin",
+  "shared_goals": [
+    "将 repair_progress 提升至 3"
+  ],
+  "termination_policy": {
+    "hard_conditions": [
+      {
+        "condition_id": "repaired",
+        "expr": "world['repair_progress'] == 3",
+        "outcome": "GOAL_REACHED",
+        "reason": "桥梁修复完成"
+      }
+    ],
+    "max_turns": 10
+  },
+  "world_state_schema": {
+    "fields": [
+      {
+        "max": 3,
+        "min": 0,
+        "path": "repair_progress",
+        "description": "修复进度",
+        "preference": "HIGHER",
+        "type": "int",
+        "visibility": {
+          "audience": "PUBLIC"
+        }
+      }
+    ],
+    "invariants": [
+      "working['repair_progress'] <= 3"
+    ],
+    "schema_version": "1"
+  }
+}

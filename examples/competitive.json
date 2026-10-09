@@ -1,0 +1,161 @@
+{
+  "action_specs": [
+    {
+      "action_type": "a_bid",
+      "description": "A 投入一单位预算",
+      "effects": [
+        {
+          "op": "sub",
+          "path": "a_budget",
+          "value": 1
+        },
+        {
+          "op": "add",
+          "path": "public_pool",
+          "value": 1
+        }
+      ],
+      "kind": "WRITE",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "preconditions": [
+        {
+          "expr": "world['a_budget'] >= 1",
+          "reason_code": "INSUFFICIENT_BUDGET"
+        }
+      ],
+      "visibility": {
+        "proposal": {
+          "audience": "ALL_AGENTS"
+        },
+        "result": {
+          "audience": "ALL_AGENTS"
+        }
+      }
+    },
+    {
+      "action_type": "b_bid",
+      "description": "B 投入一单位预算",
+      "effects": [
+        {
+          "op": "sub",
+          "path": "b_budget",
+          "value": 1
+        },
+        {
+          "op": "add",
+          "path": "public_pool",
+          "value": 1
+        }
+      ],
+      "kind": "WRITE",
+      "params_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "preconditions": [
+        {
+          "expr": "world['b_budget'] >= 1",
+          "reason_code": "INSUFFICIENT_BUDGET"
+        }
+      ],
+      "visibility": {
+        "proposal": {
+          "audience": "ALL_AGENTS"
+        },
+        "result": {
+          "audience": "ALL_AGENTS"
+        }
+      }
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "a",
+      "allowed_tools": [
+        "a_bid"
+      ],
+      "display_name": "A",
+      "model_id": "deepseek-flash",
+      "persona": "策略型竞价者",
+      "public_role": "竞价"
+    },
+    {
+      "agent_id": "b",
+      "allowed_tools": [
+        "b_bid"
+      ],
+      "display_name": "B",
+      "model_id": "deepseek-flash",
+      "persona": "耐心的竞价者",
+      "public_role": "竞价"
+    }
+  ],
+  "background_story": "两名参与者各自掌握秘密预算。",
+  "early_semantic_trigger_policy": {
+    "enabled": false
+  },
+  "initial_world_state": {
+    "a_budget": 5,
+    "b_budget": 5,
+    "public_pool": 0
+  },
+  "interaction_mode": "competitive",
+  "judging_policy": {
+    "enabled": false
+  },
+  "leaderboard_config": {
+    "enabled": false,
+    "leaderboard_type": "competitive"
+  },
+  "public_story": "两名参与者各自掌握秘密预算，预算数额仅本人知晓。",
+  "random_seed": 202,
+  "scenario_name": "双人竞价",
+  "scene_id": "competitive-bids",
+  "scene_version": "1",
+  "scheduler_policy": "shuffle_round_robin",
+  "termination_policy": {
+    "max_turns": 10
+  },
+  "world_state_schema": {
+    "fields": [
+      {
+        "min": 0,
+        "owner_id": "a",
+        "path": "a_budget",
+        "type": "int",
+        "visibility": {
+          "audience": "OWNER"
+        },
+        "description": "A 的预算"
+      },
+      {
+        "min": 0,
+        "owner_id": "b",
+        "path": "b_budget",
+        "type": "int",
+        "visibility": {
+          "audience": "OWNER"
+        },
+        "description": "B 的预算"
+      },
+      {
+        "min": 0,
+        "path": "public_pool",
+        "type": "int",
+        "visibility": {
+          "audience": "PUBLIC"
+        },
+        "description": "公共竞标池"
+      }
+    ],
+    "invariants": [
+      "working['a_budget'] + working['b_budget'] + working['public_pool'] == world['a_budget'] + world['b_budget'] + world['public_pool']"
+    ],
+    "schema_version": "1"
+  }
+}
