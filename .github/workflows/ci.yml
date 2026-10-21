@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 测试 (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: 安装依赖
+        run: python -m pip install -e ".[test]"
+      - name: 校验示例场景
+        run: |
+          python -m heterosbox validate examples/cooperative.json
+          python -m heterosbox validate examples/competitive.json
+      - name: 运行测试（离线，不调用任何模型 API）
+        run: python -m pytest -q -p no:cacheprovider --cov=heterosbox --cov-report=term
