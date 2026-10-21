@@ -1,6 +1,18 @@
+from pathlib import Path
+
 import pytest
 
 from heterosbox.models import SceneRuntimeConfig
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _ensure_test_output_dir():
+    """确保测试使用的 SQLite 输出目录存在。
+
+    部分测试把临时数据库写入工作目录下的 ``test_output/``（避开某些系统受限的临时目录），
+    全新克隆的仓库中该目录不存在，会导致 ``sqlite3.OperationalError: unable to open database file``。
+    """
+    Path("test_output").mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture
