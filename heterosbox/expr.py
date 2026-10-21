@@ -5,7 +5,7 @@ import math
 from types import MappingProxyType
 from typing import Any
 
-from simpleeval import SimpleEval
+from simpleeval import EvalWithCompoundTypes
 
 
 class ExpressionError(ValueError):
@@ -20,7 +20,7 @@ def freeze(value: Any) -> Any:
     return copy.deepcopy(value)
 
 
-class _BoundedSimpleEval(SimpleEval):
+class _BoundedSimpleEval(EvalWithCompoundTypes):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.steps = 0
