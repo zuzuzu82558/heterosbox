@@ -1,6 +1,11 @@
 # 拟界（HeteroSbox）
 
-依据 `01_HeteroSbox_Architecture_RFC_BACKEND_ONLY_FOR_CODEX.md` V1.8.2 Clean 实现的 Python 3.11+ 后端与桌面网页。前端位于 `frontend/`，由 FastAPI 同源提供，不需要 npm 安装或前端构建步骤。
+[![CI](https://github.com/zuzuzu82558/heterosbox/actions/workflows/ci.yml/badge.svg)](https://github.com/zuzuzu82558/heterosbox/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+拟界是一个多智能体推演沙盒：用自然语言或 JSON 描述场景，让多个由大模型驱动的角色在受约束的世界规则下行动，并提供观战、回放、裁判和排行。
+
+项目包含 Python 3.11+ 后端与桌面网页，按内部架构设计文档（V1.8.2，未随仓库公开）实现。前端位于 `frontend/`，由 FastAPI 同源提供，不需要 npm 安装或前端构建步骤。
 
 ## 桌面网页
 
@@ -29,9 +34,19 @@
 
 ## 运行
 
+Linux / macOS：
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -e '.[test]'
+.venv/bin/python -m heterosbox validate examples/cooperative.json
+.venv/bin/python -m heterosbox serve --prompt-key
+```
+
+Windows（PowerShell，使用 uv）：
+
 ```powershell
 uv venv .venv --python 3.12
-$env:UV_CACHE_DIR='E:\NiJie\.uv-cache'
 uv pip install --python .venv\Scripts\python.exe -e '.[test]'
 .venv\Scripts\python.exe -m heterosbox validate examples\cooperative.json
 .venv\Scripts\python.exe -m heterosbox serve --prompt-key
@@ -59,8 +74,14 @@ $created
 .venv\Scripts\python.exe -m pytest -q -p no:cacheprovider --cov=heterosbox --cov-report=term
 ```
 
+测试完全离线运行，不需要模型密钥，也不会调用任何付费 API。Linux / macOS 下把 `.venv\Scripts\python.exe` 换成 `.venv/bin/python` 即可。每次推送和 PR 都会在 GitHub Actions 上以 Ubuntu / Windows × Python 3.11 / 3.12 运行同一套测试。
+
 测试覆盖 ACL Canary、事件揭示、原子事务、READ Loop、动作失败发言抑制、STEP Round 边界、预算阻塞、重启恢复、在途 STOP 与 DeepSeek 协议解析，并包含“地底三十日”固定回归场景，验证角色权限、私有事实、定向传播、多 Effect、资源、环境结算、三种终局和排行方向。DeepSeek 协议测试使用模拟 HTTP，不消耗真实模型额度。
 
 ## 当前边界
 
-这是一套可运行的本机产品基础，尚未覆盖 RFC 的全部扩展契约：TAKEOVER / OPERATOR_EVENT 的完整命令流程、生产级认证、Blackboard 压缩、语义指标排行、供应商级费用计量与所有断线保留窗口策略仍需继续实现。当前排行榜只支持有明确世界字段映射的确定性数值指标。SQLite 的恢复以已保存的 Checkpoint 为基础；生产环境还需故障注入验证事务持久化边界。
+这是一套可运行的本机产品基础，尚未覆盖架构设计的全部扩展契约：TAKEOVER / OPERATOR_EVENT 的完整命令流程、生产级认证、Blackboard 压缩、语义指标排行、供应商级费用计量与所有断线保留窗口策略仍需继续实现。当前排行榜只支持有明确世界字段映射的确定性数值指标。SQLite 的恢复以已保存的 Checkpoint 为基础；生产环境还需故障注入验证事务持久化边界。
+
+## 许可证
+
+本项目基于 [MIT 许可证](LICENSE) 开源。
